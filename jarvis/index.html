@@ -355,9 +355,9 @@
     </div>
 
     <div class="setup-campo">
-      <label>// ANTHROPIC API KEY</label>
-      <input type="password" id="input-apikey" placeholder="sk-ant-..." autocomplete="off" />
-      <div class="setup-nota">⚠ Guardada solo en este navegador (localStorage). No se comparte.</div>
+      <label>// GOOGLE GEMINI API KEY (GRATIS)</label>
+      <input type="password" id="input-apikey" placeholder="AIza..." autocomplete="off" />
+      <div class="setup-nota">✅ Gratis en aistudio.google.com · Guardada solo en este navegador.</div>
     </div>
 
     <button class="btn-launch" onclick="lanzar()"><span>▶ INICIALIZAR SISTEMA</span></button>
@@ -414,7 +414,7 @@
       </div>
       <div class="panel-bloque">
         <div class="panel-bloque-titulo">// IA MODEL</div>
-        <div class="panel-bloque-val" style="font-size:0.7rem">CLAUDE<br>HAIKU 4.5</div>
+        <div class="panel-bloque-val" style="font-size:0.7rem">GEMINI<br>FLASH 2.0</div></div>
       </div>
       <div class="panel-bloque">
         <div class="panel-bloque-titulo">// IDIOMA</div>
@@ -537,7 +537,7 @@ function lanzar() {
   const key    = document.getElementById('input-apikey').value.trim();
 
   if (!nombre) { alert('Ingresa tu nombre.'); return; }
-  if (!key || !key.startsWith('sk-ant-')) { alert('Ingresa una API Key válida de Anthropic.'); return; }
+  if (!key || !key.startsWith('AIza')) { alert('Ingresa una API Key válida de Google Gemini (empieza con AIza).'); return; }
 
   nombreUsuario = nombre;
   apiKey = key;
@@ -806,7 +806,7 @@ async function procesarInput(texto) {
   }
 }
 
-// ─── CLAUDE API ───────────────────────────────────────────────
+// ─── GEMINI API ───────────────────────────────────────────────
 async function llamarClaude(texto) {
   const systemPrompt = `Eres J.A.R.V.I.S. (Just A Rather Very Intelligent System), el asistente de IA avanzado del usuario.
 
@@ -818,29 +818,26 @@ Personalidad:
 - Habla en español, pero si el usuario escribe en inglés, responde en inglés
 - Eres capaz de ayudar con cualquier tema: código, preguntas, ideas, tareas`;
 
-  historial.push({ role: 'user', content: texto });
+  historial.push({ role: 'user', parts: [{ text: texto }] });
   if (historial.length > 12) historial = historial.slice(-12);
 
-  const res = await fetch('https://api.anthropic.com/v1/messages', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-      'anthropic-dangerous-direct-browser-access': 'true'
-    },
-    body: JSON.stringify({
-      model: 'claude-haiku-4-5-20251001',
-      max_tokens: 200,
-      system: systemPrompt,
-      messages: historial
-    })
-  });
+  const res = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`,
+    {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: systemPrompt }] },
+        contents: historial,
+        generationConfig: { maxOutputTokens: 200, temperature: 0.8 }
+      })
+    }
+  );
 
   if (!res.ok) throw new Error('API error');
   const data = await res.json();
-  const respuesta = data.content[0].text;
-  historial.push({ role: 'assistant', content: respuesta });
+  const respuesta = data.candidates[0].content.parts[0].text;
+  historial.push({ role: 'model', parts: [{ text: respuesta }] });
   return respuesta;
 }
 
