@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J.A.R.V.I.S.</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --azul: #00D4FF;
+      --azul2: #0094FF;
+      --azul-dark: #003366;
+      --oro: #FFB800;
+      --rojo: #FF4444;
+      --verde: #00FF88;
+      --fondo: #020B18;
+      --fondo2: #050F1E;
+    }
+
+    html, body { width: 100%; height: 100%; overflow: hidden; }
+
+    body {
+      font-family: 'Share Tech Mono', monospace;
+      background: var(--fondo);
+      color: var(--azul);
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    /* ─── SETUP SCREEN ─── */
+    #setup {
+      position: fixed; inset: 0; z-index: 200;
+      background: var(--fondo);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column;
+    }
+    .setup-box {
+      border: 1px solid var(--azul2);
+      box-shadow: 0 0 40px rgba(0,148,255,0.3), inset 0 0 40px rgba(0,148,255,0.05);
+      border-radius: 4px;
+      padding: 3rem 3.5rem;
+      width: 440px;
+      max-width: 95vw;
+      position: relative;
+    }
+    .setup-box::before {
+      content: ''; position: absolute; top: -1px; left: 20px; right: 20px; height: 2px;
+      background: linear-gradient(90deg, transparent, var(--azul), transparent);
+    }
+    .setup-logo {
+      text-align: center; margin-bottom: 2rem;
+    }
+    .setup-logo h1 {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 2rem; font-weight: 900;
+      color: var(--azul);
+      text-shadow: 0 0 20px var(--azul);
+      letter-spacing: 0.3em;
+    }
+    .setup-logo p { font-size: 0.7rem; color: rgba(0,212,255,0.5); letter-spacing: 0.2em; margin-top: 0.3rem; }
+    .setup-campo { margin-bottom: 1.2rem; }
+    .setup-campo label { display: block; font-size: 0.72rem; color: rgba(0,212,255,0.6); margin-bottom: 0.4rem; letter-spacing: 0.1em; }
+    .setup-campo input {
+      width: 100%; background: rgba(0,148,255,0.05);
+      border: 1px solid rgba(0,148,255,0.3);
+      color: var(--azul); padding: 0.7rem 1rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.9rem; outline: none; border-radius: 2px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .setup-campo input:focus {
+      border-color: var(--azul);
+      box-shadow: 0 0 12px rgba(0,212,255,0.2);
+    }
+    .setup-nota { font-size: 0.68rem; color: rgba(0,212,255,0.4); margin-top: 0.4rem; }
+    .btn-launch {
+      width: 100%; margin-top: 1.5rem;
+      background: transparent;
+      border: 1px solid var(--azul);
+      color: var(--azul);
+      font-family: 'Orbitron', sans-serif;
+      font-size: 0.9rem; font-weight: 700;
+      letter-spacing: 0.2em;
+      padding: 0.9rem;
+      cursor: pointer;
+      border-radius: 2px;
+      transition: all 0.3s;
+      position: relative; overflow: hidden;
+    }
+    .btn-launch::before {
+      content: ''; position: absolute; inset: 0;
+      background: var(--azul); transform: scaleX(0);
+      transform-origin: left; transition: transform 0.3s;
+    }
+    .btn-launch:hover::before { transform: scaleX(1); }
+    .btn-launch:hover { color: var(--fondo); }
+    .btn-launch span { position: relative; z-index: 1; }
+
+    /* ─── MAIN HUD ─── */
+    #hud {
+      position: fixed; inset: 0;
+      display: none;
+      flex-direction: column;
+      background:
+        radial-gradient(ellipse at 50% 0%, rgba(0,148,255,0.08) 0%, transparent 60%),
+        var(--fondo);
+    }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.8rem 2rem;
+      border-bottom: 1px solid rgba(0,148,255,0.15);
+      background: rgba(0,15,30,0.8);
+      flex-shrink: 0;
+    }
+    .topbar-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1rem; font-weight: 900;
+      color: var(--azul); letter-spacing: 0.3em;
+      text-shadow: 0 0 15px var(--azul);
+    }
+    .topbar-center { display: flex; gap: 2rem; }
+    .topbar-stat { text-align: center; }
+    .topbar-stat-val { font-size: 0.8rem; color: var(--azul); }
+    .topbar-stat-label { font-size: 0.6rem; color: rgba(0,212,255,0.4); }
+    .topbar-right { display: flex; align-items: center; gap: 1.5rem; }
+    #reloj { font-size: 0.9rem; color: var(--azul); }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--verde); box-shadow: 0 0 8px var(--verde); }
+
+    /* CONTENT */
+    .hud-content {
+      flex: 1; display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden; gap: 3rem; padding: 2rem;
+    }
+
+    /* Panel lateral izquierdo */
+    .panel-lat {
+      width: 160px; flex-shrink: 0;
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .panel-bloque {
+      border: 1px solid rgba(0,148,255,0.2);
+      padding: 0.8rem;
+      border-radius: 2px;
+      position: relative;
+    }
+    .panel-bloque::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 4px; height: 100%;
+      background: var(--azul2);
+    }
+    .panel-bloque-titulo { font-size: 0.6rem; color: rgba(0,212,255,0.5); letter-spacing: 0.1em; margin-bottom: 0.5rem; }
+    .panel-bloque-val { font-size: 0.85rem; color: var(--azul); }
+
+    .mini-bars { display: flex; align-items: flex-end; gap: 2px; height: 30px; margin-top: 0.5rem; }
+    .mini-bar {
+      flex: 1; background: rgba(0,148,255,0.4);
+      border-top: 1px solid var(--azul2);
+      animation: barAnim 1.5s ease-in-out infinite;
+    }
+    @keyframes barAnim {
+      0%,100% { opacity: 0.4; }
+      50% { opacity: 1; }
+    }
+
+    /* CÍRCULO CENTRAL */
+    .centro {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .hud-ring-wrap {
+      position: relative;
+      width: 340px; height: 340px;
+    }
+
+    .ring-svg {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+    }
+
+    /* Ring exterior giratorio */
+    .ring-outer { animation: rotar 20s linear infinite; transform-origin: center; }
+    .ring-outer-inv { animation: rotar 15s linear infinite reverse; transform-origin: center; }
+
+    @keyframes rotar { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
+
+    /* Canvas waveform */
+    #waveCanvas {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+    }
+
+    /* Texto central */
+    .centro-texto {
+      position: absolute; inset: 0;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 80px;
+    }
+    .centro-logo {
+      font-family: 'Orbitron', sans-serif;
+      font-size: 1.4rem; font-weight: 900;
+      color: var(--azul);
+      text-shadow: 0 0 20px var(--azul);
+      letter-spacing: 0.2em;
+    }
+    #estado-texto {
+      font-size: 0.65rem; color: rgba(0,212,255,0.6);
+      letter-spacing: 0.15em; margin-top: 0.3rem;
+    }
+
+    /* ZONA CONVERSACIÓN */
+    .conv-zona {
+      position: absolute; bottom: 100px; left: 50%;
+      transform: translateX(-50%);
+      width: min(700px, 90vw);
+      max-height: 160px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .conv-zona::-webkit-scrollbar { display: none; }
+    .msg {
+      padding: 0.5rem 0;
+      border-bottom: 1px solid rgba(0,148,255,0.1);
+      font-size: 0.82rem;
+      animation: fadeIn 0.4s ease;
+    }
+    .msg-user { color: rgba(0,212,255,0.6); }
+    .msg-jarvis { color: var(--azul); }
+    .msg-prefix { font-size: 0.65rem; letter-spacing: 0.1em; opacity: 0.5; margin-bottom: 0.2rem; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+    /* BOTÓN MIC */
+    .bottom-bar {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: center;
+      padding: 1.5rem;
+      border-top: 1px solid rgba(0,148,255,0.1);
+      gap: 2rem;
+      background: rgba(2,11,24,0.9);
+    }
+    #btn-mic {
+      width: 64px; height: 64px; border-radius: 50%;
+      background: transparent;
+      border: 2px solid var(--azul);
+      color: var(--azul);
+      font-size: 1.6rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.3s;
+      box-shadow: 0 0 20px rgba(0,212,255,0.2);
+      position: relative;
+    }
+    #btn-mic::before {
+      content: ''; position: absolute; inset: -6px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,212,255,0.2);
+    }
+    #btn-mic:hover {
+      box-shadow: 0 0 30px rgba(0,212,255,0.5);
+      border-color: white; color: white;
+    }
+    #btn-mic.escuchando {
+      border-color: var(--rojo); color: var(--rojo);
+      box-shadow: 0 0 30px rgba(255,68,68,0.5);
+      animation: pulsoMic 1s infinite;
+    }
+    #btn-mic.pensando {
+      border-color: var(--oro); color: var(--oro);
+      box-shadow: 0 0 30px rgba(255,184,0,0.5);
+    }
+    #btn-mic.hablando {
+      border-color: var(--verde); color: var(--verde);
+      box-shadow: 0 0 30px rgba(0,255,136,0.5);
+    }
+    @keyframes pulsoMic {
+      0%,100% { transform: scale(1); }
+      50% { transform: scale(1.08); }
+    }
+    .mic-hint { font-size: 0.65rem; color: rgba(0,212,255,0.4); letter-spacing: 0.1em; text-align: center; }
+
+    /* INPUT TEXTO */
+    .input-wrap { display: flex; gap: 0.5rem; align-items: center; flex: 1; max-width: 400px; }
+    #txt-input {
+      flex: 1; background: rgba(0,148,255,0.05);
+      border: 1px solid rgba(0,148,255,0.3);
+      color: var(--azul); padding: 0.6rem 1rem;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.85rem; outline: none; border-radius: 2px;
+    }
+    #txt-input:focus { border-color: var(--azul); }
+    #txt-input::placeholder { color: rgba(0,212,255,0.3); }
+    #btn-send {
+      background: transparent; border: 1px solid rgba(0,148,255,0.4);
+      color: var(--azul); padding: 0.6rem 1rem; cursor: pointer;
+      font-family: 'Share Tech Mono', monospace; font-size: 0.8rem;
+      border-radius: 2px; transition: all 0.2s;
+    }
+    #btn-send:hover { border-color: var(--azul); box-shadow: 0 0 10px rgba(0,212,255,0.2); }
+
+    /* CORNER DECORATIONS */
+    .corner {
+      position: absolute; width: 20px; height: 20px;
+      border-color: rgba(0,148,255,0.4); border-style: solid;
+    }
+    .corner-tl { top: 10px; left: 10px; border-width: 1px 0 0 1px; }
+    .corner-tr { top: 10px; right: 10px; border-width: 1px 1px 0 0; }
+    .corner-bl { bottom: 80px; left: 10px; border-width: 0 0 1px 1px; }
+    .corner-br { bottom: 80px; right: 10px; border-width: 0 1px 1px 0; }
+
+    /* SCAN LINE */
+    .scanline {
+      position: absolute; inset: 0; pointer-events: none;
+      background: repeating-linear-gradient(
+        0deg, transparent, transparent 2px,
+        rgba(0,148,255,0.015) 2px, rgba(0,148,255,0.015) 4px
+      );
+    }
+
+    /* NO VOZ NOTICE */
+    #no-voz-notice {
+      display: none;
+      position: fixed; top: 80px; left: 50%; transform: translateX(-50%);
+      background: rgba(255,184,0,0.1); border: 1px solid var(--oro);
+      color: var(--oro); padding: 0.6rem 1.5rem;
+      font-size: 0.75rem; letter-spacing: 0.1em;
+      border-radius: 2px; z-index: 50;
+    }
+
+    @media (max-width: 700px) {
+      .panel-lat { display: none; }
+      .hud-ring-wrap { width: 260px; height: 260px; }
+      .centro-logo { font-size: 1rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════ SETUP ═══════════ -->
+<div id="setup">
+  <div class="setup-box">
+    <div class="setup-logo">
+      <h1>J.A.R.V.I.S.</h1>
+      <p>JUST A RATHER VERY INTELLIGENT SYSTEM</p>
+    </div>
+
+    <div class="setup-campo">
+      <label>// TU NOMBRE</label>
+      <input type="text" id="input-nombre" placeholder="Ej: Juan" autocomplete="off" />
+    </div>
+
+    <div class="setup-campo">
+      <label>// ANTHROPIC API KEY</label>
+      <input type="password" id="input-apikey" placeholder="sk-ant-..." autocomplete="off" />
+      <div class="setup-nota">⚠ Guardada solo en este navegador (localStorage). No se comparte.</div>
+    </div>
+
+    <button class="btn-launch" onclick="lanzar()"><span>▶ INICIALIZAR SISTEMA</span></button>
+  </div>
+</div>
+
+<!-- ═══════════ HUD ═══════════ -->
+<div id="hud">
+  <div class="scanline"></div>
+  <div class="corner corner-tl"></div>
+  <div class="corner corner-tr"></div>
+  <div class="corner corner-bl"></div>
+  <div class="corner corner-br"></div>
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-logo">J.A.R.V.I.S.</div>
+    <div class="topbar-center">
+      <div class="topbar-stat">
+        <div class="topbar-stat-val" id="top-usuario">—</div>
+        <div class="topbar-stat-label">USUARIO</div>
+      </div>
+      <div class="topbar-stat">
+        <div class="topbar-stat-val" id="top-estado">STANDBY</div>
+        <div class="topbar-stat-label">ESTADO</div>
+      </div>
+      <div class="topbar-stat">
+        <div class="topbar-stat-val" id="top-msgs">0</div>
+        <div class="topbar-stat-label">MENSAJES</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span id="reloj">00:00:00</span>
+      <div class="status-dot" id="status-dot"></div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="hud-content">
+
+    <!-- Panel izquierdo -->
+    <div class="panel-lat">
+      <div class="panel-bloque">
+        <div class="panel-bloque-titulo">// SISTEMA</div>
+        <div class="panel-bloque-val">ONLINE</div>
+        <div class="mini-bars">
+          <div class="mini-bar" style="height:60%;animation-delay:0s"></div>
+          <div class="mini-bar" style="height:80%;animation-delay:0.2s"></div>
+          <div class="mini-bar" style="height:40%;animation-delay:0.4s"></div>
+          <div class="mini-bar" style="height:100%;animation-delay:0.1s"></div>
+          <div class="mini-bar" style="height:70%;animation-delay:0.3s"></div>
+          <div class="mini-bar" style="height:50%;animation-delay:0.5s"></div>
+        </div>
+      </div>
+      <div class="panel-bloque">
+        <div class="panel-bloque-titulo">// IA MODEL</div>
+        <div class="panel-bloque-val" style="font-size:0.7rem">CLAUDE<br>HAIKU 4.5</div>
+      </div>
+      <div class="panel-bloque">
+        <div class="panel-bloque-titulo">// IDIOMA</div>
+        <div class="panel-bloque-val">AUTO</div>
+      </div>
+    </div>
+
+    <!-- ANILLO CENTRAL -->
+    <div class="centro">
+      <div class="hud-ring-wrap">
+
+        <!-- SVG rings -->
+        <svg class="ring-svg" viewBox="0 0 340 340">
+          <!-- Ring exterior con ticks -->
+          <g class="ring-outer">
+            <circle cx="170" cy="170" r="165" fill="none" stroke="rgba(0,148,255,0.25)" stroke-width="1"/>
+            <circle cx="170" cy="170" r="165" fill="none"
+              stroke="rgba(0,212,255,0.6)" stroke-width="1.5"
+              stroke-dasharray="8 4" />
+            <!-- Arcos destacados -->
+            <path d="M 170 5 A 165 165 0 0 1 325 170" fill="none" stroke="var(--azul)" stroke-width="2.5"/>
+            <circle cx="170" cy="5" r="4" fill="var(--azul)"/>
+            <circle cx="325" cy="170" r="4" fill="var(--azul)"/>
+          </g>
+
+          <!-- Ring medio inverso -->
+          <g class="ring-outer-inv">
+            <circle cx="170" cy="170" r="145" fill="none" stroke="rgba(0,148,255,0.15)" stroke-width="1"/>
+            <circle cx="170" cy="170" r="145" fill="none"
+              stroke="rgba(0,148,255,0.4)" stroke-width="1"
+              stroke-dasharray="20 40" />
+          </g>
+
+          <!-- Ring interior fijo -->
+          <circle cx="170" cy="170" r="125" fill="none" stroke="rgba(0,148,255,0.12)" stroke-width="1"/>
+          <circle cx="170" cy="170" r="120" fill="rgba(0,10,24,0.8)" stroke="rgba(0,148,255,0.3)" stroke-width="1.5"/>
+
+          <!-- Crosshair -->
+          <line x1="170" y1="50" x2="170" y2="80" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
+          <line x1="170" y1="260" x2="170" y2="290" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
+          <line x1="50" y1="170" x2="80" y2="170" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
+          <line x1="260" y1="170" x2="290" y2="170" stroke="rgba(0,212,255,0.3)" stroke-width="1"/>
+
+          <!-- ID ring indicator -->
+          <circle cx="170" cy="170" r="108" fill="none" id="ring-estado-color"
+            stroke="rgba(0,212,255,0.2)" stroke-width="3"
+            stroke-dasharray="90 580"/>
+        </svg>
+
+        <!-- Waveform canvas -->
+        <canvas id="waveCanvas" width="200" height="200"></canvas>
+
+        <!-- Texto central -->
+        <div class="centro-texto">
+          <div class="centro-logo">J.A.R.V.I.S.</div>
+          <div id="estado-texto">SISTEMA ACTIVO</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel derecho -->
+    <div class="panel-lat">
+      <div class="panel-bloque">
+        <div class="panel-bloque-titulo">// VOZ</div>
+        <div class="panel-bloque-val" id="panel-voz-estado">LISTA</div>
+      </div>
+      <div class="panel-bloque">
+        <div class="panel-bloque-titulo">// SESIÓN</div>
+        <div class="panel-bloque-val" id="panel-sesion">00:00</div>
+      </div>
+      <div class="panel-bloque">
+        <div class="panel-bloque-titulo">// COMANDOS</div>
+        <div class="panel-bloque-val" style="font-size:0.65rem;color:rgba(0,212,255,0.5)">
+          "clima"<br>"hora"<br>"ayuda"<br>"nuevo chat"
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- CONVERSACIÓN -->
+  <div class="conv-zona" id="conv-zona"></div>
+
+  <!-- AVISO NO VOZ -->
+  <div id="no-voz-notice">⚠ MICRÓFONO NO DISPONIBLE — USAR TEXTO</div>
+
+  <!-- BOTTOM BAR -->
+  <div class="bottom-bar">
+    <div style="text-align:center">
+      <button id="btn-mic" onclick="toggleMic()" title="Presiona para hablar">🎤</button>
+      <div class="mic-hint" id="mic-hint">PRESIONA PARA HABLAR</div>
+    </div>
+
+    <div class="input-wrap">
+      <input type="text" id="txt-input" placeholder="O escribe aquí..." onkeydown="if(event.key==='Enter') enviarTexto()" />
+      <button id="btn-send" onclick="enviarTexto()">ENVIAR</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── ESTADO GLOBAL ───────────────────────────────────────────
+let nombreUsuario = '';
+let apiKey = '';
+let historial = [];
+let totalMsgs = 0;
+let reconocimiento = null;
+let escuchando = false;
+let hablandoTTS = false;
+let sesionInicio = Date.now();
+let audioCtx = null;
+let analyser = null;
+let micStream = null;
+let animFrame = null;
+
+// ─── SETUP ───────────────────────────────────────────────────
+function lanzar() {
+  const nombre = document.getElementById('input-nombre').value.trim();
+  const key    = document.getElementById('input-apikey').value.trim();
+
+  if (!nombre) { alert('Ingresa tu nombre.'); return; }
+  if (!key || !key.startsWith('sk-ant-')) { alert('Ingresa una API Key válida de Anthropic.'); return; }
+
+  nombreUsuario = nombre;
+  apiKey = key;
+  localStorage.setItem('jarvis_nombre', nombre);
+  localStorage.setItem('jarvis_key', key);
+
+  document.getElementById('setup').style.display = 'none';
+  document.getElementById('hud').style.display = 'flex';
+  document.getElementById('top-usuario').textContent = nombre.toUpperCase();
+
+  iniciarReloj();
+  iniciarSesion();
+  iniciarWaveform();
+  iniciarReconocimiento();
+  hablar(`Sistema en línea. Bienvenido, ${nombre}. ¿En qué puedo asistirte?`);
+}
+
+// ─── PREFILL desde localStorage ──────────────────────────────
+window.addEventListener('load', () => {
+  const n = localStorage.getItem('jarvis_nombre');
+  const k = localStorage.getItem('jarvis_key');
+  if (n) document.getElementById('input-nombre').value = n;
+  if (k) document.getElementById('input-apikey').value = k;
+});
+
+// ─── RELOJ ───────────────────────────────────────────────────
+function iniciarReloj() {
+  setInterval(() => {
+    const ahora = new Date();
+    document.getElementById('reloj').textContent =
+      ahora.toTimeString().slice(0,8);
+  }, 1000);
+}
+
+// ─── SESIÓN TIMER ────────────────────────────────────────────
+function iniciarSesion() {
+  setInterval(() => {
+    const seg = Math.floor((Date.now() - sesionInicio) / 1000);
+    const m = String(Math.floor(seg / 60)).padStart(2,'0');
+    const s = String(seg % 60).padStart(2,'0');
+    document.getElementById('panel-sesion').textContent = `${m}:${s}`;
+  }, 1000);
+}
+
+// ─── WAVEFORM CANVAS ─────────────────────────────────────────
+const waveCanvas = document.getElementById('waveCanvas');
+const waveCtx = waveCanvas.getContext('2d');
+
+function iniciarWaveform() {
+  dibujarIdle();
+}
+
+function dibujarIdle() {
+  if (animFrame) cancelAnimationFrame(animFrame);
+  const loop = () => {
+    waveCtx.clearRect(0, 0, 200, 200);
+    const cx = 100, cy = 100, r = 80;
+    const ahora = Date.now() / 1000;
+
+    waveCtx.beginPath();
+    for (let i = 0; i <= 360; i++) {
+      const ang = (i * Math.PI) / 180;
+      const ruido = Math.sin(ahora * 2 + i * 0.1) * 3;
+      const px = cx + (r + ruido) * Math.cos(ang);
+      const py = cy + (r + ruido) * Math.sin(ang);
+      i === 0 ? waveCtx.moveTo(px, py) : waveCtx.lineTo(px, py);
+    }
+    waveCtx.closePath();
+    waveCtx.strokeStyle = 'rgba(0,148,255,0.4)';
+    waveCtx.lineWidth = 1.5;
+    waveCtx.stroke();
+
+    animFrame = requestAnimationFrame(loop);
+  };
+  animFrame = requestAnimationFrame(loop);
+}
+
+async function dibujarMic() {
+  if (animFrame) cancelAnimationFrame(animFrame);
+  try {
+    if (!audioCtx) {
+      micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      audioCtx = new AudioContext();
+      const src = audioCtx.createMediaStreamSource(micStream);
+      analyser = audioCtx.createAnalyser();
+      analyser.fftSize = 256;
+      src.connect(analyser);
+    }
+    const buf = new Uint8Array(analyser.frequencyBinCount);
+    const loop = () => {
+      analyser.getByteFrequencyData(buf);
+      waveCtx.clearRect(0, 0, 200, 200);
+      const cx = 100, cy = 100;
+
+      for (let i = 0; i < 64; i++) {
+        const ang = (i / 64) * Math.PI * 2 - Math.PI / 2;
+        const val = buf[i] / 255;
+        const r1 = 60, r2 = 60 + val * 40;
+        waveCtx.beginPath();
+        waveCtx.moveTo(cx + r1 * Math.cos(ang), cy + r1 * Math.sin(ang));
+        waveCtx.lineTo(cx + r2 * Math.cos(ang), cy + r2 * Math.sin(ang));
+        waveCtx.strokeStyle = `rgba(255,68,68,${0.4 + val * 0.6})`;
+        waveCtx.lineWidth = 2;
+        waveCtx.stroke();
+      }
+      animFrame = requestAnimationFrame(loop);
+    };
+    animFrame = requestAnimationFrame(loop);
+  } catch { dibujarIdle(); }
+}
+
+function dibujarHablando() {
+  if (animFrame) cancelAnimationFrame(animFrame);
+  const loop = () => {
+    waveCtx.clearRect(0, 0, 200, 200);
+    const cx = 100, cy = 100;
+    const ahora = Date.now() / 300;
+
+    for (let i = 0; i < 64; i++) {
+      const ang = (i / 64) * Math.PI * 2 - Math.PI / 2;
+      const val = (Math.sin(ahora + i * 0.3) + 1) / 2;
+      const r1 = 60, r2 = 60 + val * 35;
+      waveCtx.beginPath();
+      waveCtx.moveTo(cx + r1 * Math.cos(ang), cy + r1 * Math.sin(ang));
+      waveCtx.lineTo(cx + r2 * Math.cos(ang), cy + r2 * Math.sin(ang));
+      waveCtx.strokeStyle = `rgba(0,255,136,${0.3 + val * 0.7})`;
+      waveCtx.lineWidth = 2;
+      waveCtx.stroke();
+    }
+    animFrame = requestAnimationFrame(loop);
+  };
+  animFrame = requestAnimationFrame(loop);
+}
+
+// ─── ESTADOS VISUALES ────────────────────────────────────────
+const ringColor = document.getElementById('ring-estado-color');
+
+function setEstado(estado) {
+  const mic = document.getElementById('btn-mic');
+  const txt = document.getElementById('estado-texto');
+  const top = document.getElementById('top-estado');
+  const panVoz = document.getElementById('panel-voz-estado');
+  const dot = document.getElementById('status-dot');
+
+  mic.className = '';
+  if (estado === 'escuchando') {
+    mic.classList.add('escuchando');
+    txt.textContent = '[ ESCUCHANDO... ]';
+    top.textContent = 'ESCUCHANDO';
+    panVoz.textContent = 'ACTIVA';
+    ringColor.setAttribute('stroke','rgba(255,68,68,0.6)');
+    dot.style.background = 'var(--rojo)';
+    dot.style.boxShadow = '0 0 8px var(--rojo)';
+    dibujarMic();
+  } else if (estado === 'pensando') {
+    mic.classList.add('pensando');
+    txt.textContent = '[ PROCESANDO... ]';
+    top.textContent = 'PROCESANDO';
+    panVoz.textContent = 'ESPERA';
+    ringColor.setAttribute('stroke','rgba(255,184,0,0.6)');
+    dot.style.background = 'var(--oro)';
+    dot.style.boxShadow = '0 0 8px var(--oro)';
+    dibujarIdle();
+  } else if (estado === 'hablando') {
+    mic.classList.add('hablando');
+    txt.textContent = '[ RESPONDIENDO ]';
+    top.textContent = 'RESPONDIENDO';
+    panVoz.textContent = 'TTS';
+    ringColor.setAttribute('stroke','rgba(0,255,136,0.6)');
+    dot.style.background = 'var(--verde)';
+    dot.style.boxShadow = '0 0 8px var(--verde)';
+    dibujarHablando();
+  } else {
+    txt.textContent = 'SISTEMA ACTIVO';
+    top.textContent = 'STANDBY';
+    panVoz.textContent = 'LISTA';
+    ringColor.setAttribute('stroke','rgba(0,212,255,0.2)');
+    dot.style.background = 'var(--verde)';
+    dot.style.boxShadow = '0 0 8px var(--verde)';
+    dibujarIdle();
+  }
+}
+
+// ─── RECONOCIMIENTO DE VOZ ────────────────────────────────────
+function iniciarReconocimiento() {
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  if (!SR) {
+    document.getElementById('no-voz-notice').style.display = 'block';
+    document.getElementById('btn-mic').style.opacity = '0.4';
+    document.getElementById('mic-hint').textContent = 'VOZ NO DISPONIBLE';
+    return;
+  }
+  reconocimiento = new SR();
+  reconocimiento.lang = 'es-MX';
+  reconocimiento.continuous = false;
+  reconocimiento.interimResults = false;
+
+  reconocimiento.onresult = (e) => {
+    const texto = e.results[0][0].transcript;
+    detenerEscucha();
+    procesarInput(texto);
+  };
+  reconocimiento.onerror = () => { detenerEscucha(); };
+  reconocimiento.onend   = () => { if (escuchando) detenerEscucha(); };
+}
+
+function toggleMic() {
+  if (hablandoTTS) { window.speechSynthesis.cancel(); hablandoTTS = false; setEstado('idle'); return; }
+  if (escuchando) detenerEscucha();
+  else iniciarEscucha();
+}
+
+function iniciarEscucha() {
+  if (!reconocimiento) return;
+  escuchando = true;
+  setEstado('escuchando');
+  document.getElementById('mic-hint').textContent = 'ESCUCHANDO... (CLICK PARA PARAR)';
+  reconocimiento.start();
+}
+
+function detenerEscucha() {
+  escuchando = false;
+  setEstado('idle');
+  document.getElementById('mic-hint').textContent = 'PRESIONA PARA HABLAR';
+  try { reconocimiento.stop(); } catch {}
+}
+
+// ─── INPUT TEXTO ─────────────────────────────────────────────
+function enviarTexto() {
+  const inp = document.getElementById('txt-input');
+  const texto = inp.value.trim();
+  if (!texto) return;
+  inp.value = '';
+  procesarInput(texto);
+}
+
+// ─── PROCESAR INPUT ───────────────────────────────────────────
+async function procesarInput(texto) {
+  agregarMsg('user', texto);
+
+  // Comandos locales
+  const t = texto.toLowerCase();
+  if (t.includes('hora') || t.includes('time')) {
+    const resp = `Son las ${new Date().toLocaleTimeString('es-MX')}, ${nombreUsuario}.`;
+    agregarMsg('jarvis', resp); hablar(resp); return;
+  }
+  if (t.includes('nuevo chat') || t.includes('limpiar')) {
+    historial = [];
+    document.getElementById('conv-zona').innerHTML = '';
+    const resp = `Memoria limpiada, ${nombreUsuario}. ¿En qué más puedo ayudarte?`;
+    agregarMsg('jarvis', resp); hablar(resp); return;
+  }
+
+  setEstado('pensando');
+
+  try {
+    const respuesta = await llamarClaude(texto);
+    agregarMsg('jarvis', respuesta);
+    setEstado('hablando');
+    hablar(respuesta);
+  } catch(err) {
+    const msg = `Error de conexión, ${nombreUsuario}. Verifique la API Key.`;
+    agregarMsg('jarvis', msg);
+    setEstado('idle');
+    hablar(msg);
+  }
+}
+
+// ─── CLAUDE API ───────────────────────────────────────────────
+async function llamarClaude(texto) {
+  const systemPrompt = `Eres J.A.R.V.I.S. (Just A Rather Very Intelligent System), el asistente de IA avanzado del usuario.
+
+Personalidad:
+- Formal, eficiente, inteligente y ligeramente irónico (como en Iron Man)
+- Llama al usuario por su nombre: ${nombreUsuario}
+- Respuestas CORTAS y directas (máximo 3 oraciones) — eres un asistente de voz
+- Nunca uses markdown, asteriscos, guiones ni listas. Solo texto plano
+- Habla en español, pero si el usuario escribe en inglés, responde en inglés
+- Eres capaz de ayudar con cualquier tema: código, preguntas, ideas, tareas`;
+
+  historial.push({ role: 'user', content: texto });
+  if (historial.length > 12) historial = historial.slice(-12);
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+      'anthropic-version': '2023-06-01',
+      'anthropic-dangerous-direct-browser-access': 'true'
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 200,
+      system: systemPrompt,
+      messages: historial
+    })
+  });
+
+  if (!res.ok) throw new Error('API error');
+  const data = await res.json();
+  const respuesta = data.content[0].text;
+  historial.push({ role: 'assistant', content: respuesta });
+  return respuesta;
+}
+
+// ─── TEXT TO SPEECH ───────────────────────────────────────────
+function hablar(texto) {
+  if (!window.speechSynthesis) { setEstado('idle'); return; }
+  window.speechSynthesis.cancel();
+  hablandoTTS = true;
+
+  const ut = new SpeechSynthesisUtterance(texto);
+  ut.lang = 'es-MX';
+  ut.rate = 1.05;
+  ut.pitch = 0.85;
+  ut.volume = 1;
+
+  // Intentar voz masculina
+  const voces = window.speechSynthesis.getVoices();
+  const voz = voces.find(v => v.lang.startsWith('es') && v.name.toLowerCase().includes('male'))
+    || voces.find(v => v.lang.startsWith('es'))
+    || null;
+  if (voz) ut.voice = voz;
+
+  ut.onend = () => { hablandoTTS = false; setEstado('idle'); };
+  ut.onerror = () => { hablandoTTS = false; setEstado('idle'); };
+
+  window.speechSynthesis.speak(ut);
+}
+
+// Cargar voces (algunos navegadores las carga async)
+window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+
+// ─── MENSAJES UI ──────────────────────────────────────────────
+function agregarMsg(tipo, texto) {
+  const zona = document.getElementById('conv-zona');
+  const div = document.createElement('div');
+  div.className = `msg msg-${tipo}`;
+
+  const prefix = tipo === 'user'
+    ? `<div class="msg-prefix">// ${nombreUsuario.toUpperCase()}</div>`
+    : `<div class="msg-prefix">// J.A.R.V.I.S.</div>`;
+
+  div.innerHTML = `${prefix}${texto}`;
+  zona.appendChild(div);
+  zona.scrollTop = zona.scrollHeight;
+
+  totalMsgs++;
+  document.getElementById('top-msgs').textContent = totalMsgs;
+}
+</script>
+</body>
+</html>
