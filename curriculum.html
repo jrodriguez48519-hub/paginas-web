@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CV — Juan Rodriguez</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #F3F4F6;
+      color: #111827;
+      padding: 2rem 1rem;
+    }
+
+    .cv {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 16px;
+      overflow: hidden;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.1);
+    }
+
+    /* CABECERA */
+    .cabecera {
+      background: linear-gradient(135deg, #0369A1, #0EA5E9);
+      color: white;
+      padding: 2.5rem 3rem;
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+    .avatar {
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.2);
+      border: 3px solid rgba(255,255,255,0.5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.5rem; font-weight: 800; flex-shrink: 0;
+    }
+    .cabecera-info h1 { font-size: 2rem; font-weight: 800; }
+    .cabecera-info h2 { font-size: 1rem; font-weight: 400; opacity: 0.9; margin-top: 0.3rem; }
+    .cabecera-contacto {
+      margin-top: 1rem;
+      display: flex; flex-wrap: wrap; gap: 1rem;
+    }
+    .contacto-item {
+      display: flex; align-items: center; gap: 0.4rem;
+      font-size: 0.82rem; opacity: 0.9;
+    }
+
+    /* CUERPO */
+    .cuerpo {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+    }
+
+    /* COLUMNA IZQUIERDA */
+    .col-izq {
+      background: #F8FAFC;
+      border-right: 1px solid #E5E7EB;
+      padding: 2rem 1.5rem;
+    }
+
+    /* COLUMNA DERECHA */
+    .col-der { padding: 2rem 2rem; }
+
+    /* SECCIONES */
+    .seccion { margin-bottom: 2rem; }
+    .seccion-titulo {
+      font-size: 0.7rem; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.1em;
+      color: #0369A1;
+      border-bottom: 2px solid #0EA5E9;
+      padding-bottom: 0.4rem;
+      margin-bottom: 1rem;
+    }
+
+    /* PERFIL */
+    .perfil-texto {
+      font-size: 0.88rem; line-height: 1.7; color: #374151;
+    }
+
+    /* HABILIDADES */
+    .skill-grupo { margin-bottom: 1rem; }
+    .skill-grupo-titulo { font-size: 0.78rem; font-weight: 600; color: #374151; margin-bottom: 0.5rem; }
+    .skills-tags { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .skill-tag {
+      background: #EFF6FF; border: 1px solid #BFDBFE;
+      color: #1D4ED8; padding: 0.25rem 0.7rem;
+      border-radius: 100px; font-size: 0.75rem; font-weight: 500;
+    }
+    .skill-tag.verde { background: #ECFDF5; border-color: #A7F3D0; color: #065F46; }
+    .skill-tag.morado { background: #F5F3FF; border-color: #DDD6FE; color: #5B21B6; }
+
+    /* IDIOMAS */
+    .idioma { margin-bottom: 0.8rem; }
+    .idioma-nombre { font-size: 0.85rem; font-weight: 600; color: #111827; }
+    .idioma-nivel { font-size: 0.75rem; color: #6B7280; }
+    .barra-fondo { background: #E5E7EB; border-radius: 4px; height: 5px; margin-top: 0.3rem; }
+    .barra-fill { background: #0EA5E9; border-radius: 4px; height: 5px; }
+
+    /* PROYECTOS */
+    .proyecto { margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid #F3F4F6; }
+    .proyecto:last-child { border-bottom: none; }
+    .proyecto-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: 0.4rem; }
+    .proyecto-nombre { font-size: 1rem; font-weight: 700; color: #111827; }
+    .proyecto-tipo {
+      font-size: 0.72rem; background: #EFF6FF; color: #1D4ED8;
+      padding: 0.2rem 0.6rem; border-radius: 100px; white-space: nowrap;
+    }
+    .proyecto-desc { font-size: 0.85rem; color: #374151; line-height: 1.6; margin-bottom: 0.6rem; }
+    .proyecto-techs { display: flex; flex-wrap: wrap; gap: 0.3rem; }
+    .tech-badge {
+      background: #F3F4F6; color: #6B7280;
+      padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.72rem;
+    }
+
+    /* EXPERIENCIA */
+    .exp-item { margin-bottom: 1.5rem; }
+    .exp-cargo { font-size: 1rem; font-weight: 700; }
+    .exp-empresa { font-size: 0.88rem; color: #0369A1; font-weight: 600; }
+    .exp-fecha { font-size: 0.78rem; color: #6B7280; margin: 0.2rem 0 0.5rem; }
+    .exp-desc { font-size: 0.85rem; color: #374151; line-height: 1.6; }
+    .exp-desc li { margin-left: 1rem; margin-bottom: 0.3rem; }
+
+    /* EDUCACION */
+    .edu-item { margin-bottom: 1rem; }
+    .edu-titulo { font-size: 0.9rem; font-weight: 700; }
+    .edu-lugar { font-size: 0.82rem; color: #0369A1; }
+    .edu-fecha { font-size: 0.75rem; color: #6B7280; }
+
+    /* LINKS */
+    a { color: inherit; text-decoration: none; }
+
+    /* BOTÓN IMPRIMIR */
+    .btn-imprimir {
+      display: block; margin: 1.5rem auto;
+      background: #0369A1; color: white; border: none;
+      padding: 0.8rem 2.5rem; border-radius: 10px;
+      font-size: 1rem; font-weight: 700; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .btn-imprimir:hover { background: #0284C7; }
+
+    @media print {
+      body { background: white; padding: 0; }
+      .cv { box-shadow: none; border-radius: 0; }
+      .btn-imprimir { display: none; }
+    }
+
+    @media (max-width: 600px) {
+      .cuerpo { grid-template-columns: 1fr; }
+      .col-izq { border-right: none; border-bottom: 1px solid #E5E7EB; }
+      .cabecera { flex-direction: column; text-align: center; }
+      .cabecera-contacto { justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+
+<button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir / Guardar como PDF</button>
+
+<div class="cv">
+
+  <!-- CABECERA -->
+  <div class="cabecera">
+    <div class="avatar">JR</div>
+    <div class="cabecera-info">
+      <h1>Juan Rodriguez</h1>
+      <h2>Desarrollador Web & Aplicaciones con IA</h2>
+      <div class="cabecera-contacto">
+        <span class="contacto-item">✉️ jrodriguez48519@gmail.com</span>
+        <span class="contacto-item">🐙 github.com/jrodriguez48519-hub</span>
+        <span class="contacto-item">🌐 Disponible para trabajo remoto</span>
+        <span class="contacto-item">📍 México</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="cuerpo">
+
+    <!-- COLUMNA IZQUIERDA -->
+    <div class="col-izq">
+
+      <div class="seccion">
+        <div class="seccion-titulo">Habilidades Técnicas</div>
+
+        <div class="skill-grupo">
+          <div class="skill-grupo-titulo">Frontend</div>
+          <div class="skills-tags">
+            <span class="skill-tag">HTML5</span>
+            <span class="skill-tag">CSS3</span>
+            <span class="skill-tag">JavaScript</span>
+            <span class="skill-tag">Bootstrap 5</span>
+            <span class="skill-tag">Responsive</span>
+          </div>
+        </div>
+
+        <div class="skill-grupo">
+          <div class="skill-grupo-titulo">Inteligencia Artificial</div>
+          <div class="skills-tags">
+            <span class="skill-tag verde">Claude AI</span>
+            <span class="skill-tag verde">API Integration</span>
+            <span class="skill-tag verde">Chatbots</span>
+          </div>
+        </div>
+
+        <div class="skill-grupo">
+          <div class="skill-grupo-titulo">Backend / Otros</div>
+          <div class="skills-tags">
+            <span class="skill-tag morado">Python</span>
+            <span class="skill-tag morado">Node.js</span>
+            <span class="skill-tag morado">Git / GitHub</span>
+            <span class="skill-tag morado">Netlify</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion">
+        <div class="seccion-titulo">Idiomas</div>
+
+        <div class="idioma">
+          <div class="idioma-nombre">Español</div>
+          <div class="idioma-nivel">Nativo</div>
+          <div class="barra-fondo"><div class="barra-fill" style="width:100%"></div></div>
+        </div>
+
+        <div class="idioma">
+          <div class="idioma-nombre">Inglés</div>
+          <div class="idioma-nivel">Básico – Intermedio (lectura técnica)</div>
+          <div class="barra-fondo"><div class="barra-fill" style="width:55%"></div></div>
+        </div>
+      </div>
+
+      <div class="seccion">
+        <div class="seccion-titulo">Servicios</div>
+        <ul style="font-size:0.82rem;color:#374151;line-height:2;list-style:none;">
+          <li>🌐 Landing Pages y Sitios Web</li>
+          <li>🤖 Apps con IA integrada</li>
+          <li>⚙️ Herramientas Web a medida</li>
+          <li>🔧 Mantenimiento web</li>
+          <li>📱 Diseño responsivo</li>
+        </ul>
+      </div>
+
+    </div>
+
+    <!-- COLUMNA DERECHA -->
+    <div class="col-der">
+
+      <div class="seccion">
+        <div class="seccion-titulo">Perfil Profesional</div>
+        <p class="perfil-texto">
+          Desarrollador web autodidacta con experiencia en la creación de aplicaciones web modernas e inteligentes. Me especializo en construir herramientas digitales funcionales utilizando HTML, CSS, JavaScript y APIs de inteligencia artificial como Claude de Anthropic.
+          <br><br>
+          Tengo la capacidad de desarrollar proyectos completos de forma independiente, desde el diseño visual hasta la integración de IA, sin necesidad de infraestructura costosa. Mis proyectos están pensados para ser rápidos, responsivos y fáciles de usar en cualquier dispositivo.
+          <br><br>
+          Busco clientes que necesiten soluciones web reales, entregadas rápido y con resultados concretos.
+        </p>
+      </div>
+
+      <div class="seccion">
+        <div class="seccion-titulo">Proyectos Destacados</div>
+
+        <div class="proyecto">
+          <div class="proyecto-header">
+            <span class="proyecto-nombre">⚕️ Doctor JR — App Médica con IA</span>
+            <span class="proyecto-tipo">Proyecto Principal</span>
+          </div>
+          <p class="proyecto-desc">
+            Aplicación médica digital completa impulsada por inteligencia artificial. Incluye chat médico con diagnóstico por síntomas, generación de recetas digitales imprimibles, remedios naturales, registro de pacientes con historial clínico, y cobertura de más de 50 especialidades médicas. Desarrollada 100% como app standalone (sin backend ni costo de hosting).
+          </p>
+          <div class="proyecto-techs">
+            <span class="tech-badge">HTML5</span>
+            <span class="tech-badge">CSS3</span>
+            <span class="tech-badge">JavaScript</span>
+            <span class="tech-badge">Claude AI API</span>
+            <span class="tech-badge">Responsive</span>
+            <span class="tech-badge">Print API</span>
+          </div>
+        </div>
+
+        <div class="proyecto">
+          <div class="proyecto-header">
+            <span class="proyecto-nombre">🐾 Cuidados de Perros — Sitio Informativo</span>
+            <span class="proyecto-tipo">Web</span>
+          </div>
+          <p class="proyecto-desc">
+            Sitio web completo sobre cuidado canino con información organizada por razas, guías de salud, alimentación y comportamiento. Diseño moderno, animaciones CSS y totalmente responsivo para móvil y escritorio.
+          </p>
+          <div class="proyecto-techs">
+            <span class="tech-badge">HTML5</span>
+            <span class="tech-badge">CSS3</span>
+            <span class="tech-badge">JavaScript</span>
+            <span class="tech-badge">Responsive</span>
+          </div>
+        </div>
+
+        <div class="proyecto">
+          <div class="proyecto-header">
+            <span class="proyecto-nombre">🔢 Calculadora Web</span>
+            <span class="proyecto-tipo">App</span>
+          </div>
+          <p class="proyecto-desc">
+            Calculadora funcional con operaciones completas, diseño limpio y lógica en JavaScript puro sin dependencias externas.
+          </p>
+          <div class="proyecto-techs">
+            <span class="tech-badge">HTML5</span>
+            <span class="tech-badge">CSS3</span>
+            <span class="tech-badge">JavaScript</span>
+          </div>
+        </div>
+
+      </div>
+
+      <div class="seccion">
+        <div class="seccion-titulo">Experiencia</div>
+
+        <div class="exp-item">
+          <div class="exp-cargo">Desarrollador Web Freelance</div>
+          <div class="exp-empresa">Independiente</div>
+          <div class="exp-fecha">2024 — Presente</div>
+          <div class="exp-desc">
+            <ul>
+              <li>Diseño y desarrollo de aplicaciones web completas desde cero</li>
+              <li>Integración de APIs de inteligencia artificial (Claude, OpenAI)</li>
+              <li>Creación de herramientas digitales standalone sin necesidad de backend</li>
+              <li>Deploy y gestión de proyectos en Netlify y GitHub</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <div class="seccion">
+        <div class="seccion-titulo">Educación</div>
+
+        <div class="edu-item">
+          <div class="edu-titulo">Desarrollo Web — Autodidacta</div>
+          <div class="edu-lugar">Cursos online, proyectos personales y práctica continua</div>
+          <div class="edu-fecha">2023 — Presente</div>
+        </div>
+
+        <div class="edu-item">
+          <div class="edu-titulo">Integración de IA en Aplicaciones Web</div>
+          <div class="edu-lugar">Práctica con Anthropic Claude API y proyectos reales</div>
+          <div class="edu-fecha">2024 — Presente</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<button class="btn-imprimir" onclick="window.print()">🖨️ Imprimir / Guardar como PDF</button>
+
+</body>
+</html>
