@@ -1,14 +1,27 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EJERCICIO 1</title>
+    <title>Calculadora</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="fondo">
-    <div class="container">
+
+    <!-- ── MENÚ / PANTALLA DE BIENVENIDA ── -->
+    <div id="menu">
+        <div class="menu-box">
+            <div class="menu-icon">🧮</div>
+            <h1 class="menu-title">CALCULADORA</h1>
+            <p class="menu-sub">Suma · Resta · Multiplicación · División</p>
+            <button class="btn-iniciar" onclick="iniciar()">INICIAR</button>
+            <p class="menu-credito">Ejercicio 1 — Bootstrap 5</p>
+        </div>
+    </div>
+
+    <!-- ── CALCULADORA (oculta al inicio) ── -->
+    <div id="app" class="container" style="display:none;">
         <h1 class="text-center text-light my-3">CALCULADORA</h1>
         <table border width="100%" class="table table-dark table-striped">
             <tr>
@@ -16,14 +29,14 @@
             </tr>
             <tr>
                 <td><input type="range" class="form-control" id="num1" min="1" max="100" value="1"></td>
-                <td><h2 id="vnum1">1</h2></td>
+                <td><h2 id="vnum1" class="text-light">1</h2></td>
             </tr>
             <tr>
                 <td colspan="2"><h3 class="text-light">NUMERO 2</h3></td>
             </tr>
             <tr>
                 <td><input type="range" class="form-control" id="num2" min="1" max="100" value="1"></td>
-                <td><h2 id="vnum2">1</h2></td>
+                <td><h2 id="vnum2" class="text-light">1</h2></td>
             </tr>
             <tr>
                 <td><button onclick="suma()" class="btn btn-danger w-100">SUMA</button></td>
@@ -39,8 +52,14 @@
             <tr>
                 <td colspan="2"><h2 class="text-center text-light" id="res">RESULTADO</h2></td>
             </tr>
+            <tr>
+                <td colspan="2">
+                    <button onclick="volverMenu()" class="btn btn-outline-light w-100 mt-1">← MENÚ</button>
+                </td>
+            </tr>
         </table>
     </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js"></script>
     <script src="app.js"></script>
 </body>

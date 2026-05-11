@@ -1,4 +1,88 @@
-.fondo{
+.fondo {
     background: #3F5EFB;
-    background: radial-gradient(circle, rgba(63, 94, 251, 1) 0%, rgba(63, 0, 252, 1) 100%);
+    background: radial-gradient(circle, rgba(63,94,251,1) 0%, rgba(63,0,252,1) 100%);
+    min-height: 100vh;
+}
+
+/* ── MENÚ ── */
+#menu {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    animation: fadeIn 0.5s ease;
+}
+
+.menu-box {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 3rem 3.5rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+}
+
+.menu-icon {
+    font-size: 4rem;
+    margin-bottom: 1rem;
+}
+
+.menu-title {
+    color: #fff;
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    margin-bottom: 0.5rem;
+}
+
+.menu-sub {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.95rem;
+    margin-bottom: 2rem;
+}
+
+.btn-iniciar {
+    background: #fff;
+    color: #3F5EFB;
+    border: none;
+    border-radius: 50px;
+    padding: 0.8rem 3rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.btn-iniciar:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 25px rgba(0,0,0,0.3);
+}
+
+.menu-credito {
+    color: rgba(255,255,255,0.4);
+    font-size: 0.75rem;
+    margin-top: 1.5rem;
+    margin-bottom: 0;
+}
+
+/* ── CALCULADORA ── */
+#app {
+    animation: slideUp 0.4s ease;
+    padding-top: 1rem;
+}
+
+/* ── ANIMACIONES ── */
+@keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.96); }
+    to   { opacity: 1; transform: scale(1); }
+}
+
+@keyframes slideUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
